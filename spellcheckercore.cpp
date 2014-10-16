@@ -270,7 +270,27 @@ ProjectMistakesModel *SpellCheckerCore::spellingMistakesModel() const
 }
 //--------------------------------------------------
 
-bool SpellCheckerCore::isWordUnderCursorMistake(Word& word)
+bool SpellCheckerCore::isWordAtPositionMistake(const QString &currentFileName, int position, Word& word) const
+{
+    WordList wl;
+    wl = d->spellingMistakesModel->mistakesForFile(currentFileName);
+    if(wl.isEmpty() == true) {
+        return false;
+    }
+    WordList::ConstIterator iter = wl.constBegin();
+    while(iter != wl.constEnd()) {
+        const Word& currentWord = iter.value();
+        if((currentWord.start >= position)
+                && (position <= currentWord.end)) {
+            word = currentWord;
+            return true;
+        }
+        ++iter;
+    }
+    return false;
+}
+
+bool SpellCheckerCore::isWordUnderCursorMistake(Word& word) const
 {
     if(d->currentEditor.isNull() == true) {
         return false;
@@ -279,6 +299,7 @@ bool SpellCheckerCore::isWordUnderCursorMistake(Word& word)
     unsigned int column = d->currentEditor->currentColumn();
     unsigned int line = d->currentEditor->currentLine();
     QString currentFileName = d->currentEditor->document()->filePath();
+
     WordList wl;
     wl = d->spellingMistakesModel->mistakesForFile(currentFileName);
     if(wl.isEmpty() == true) {

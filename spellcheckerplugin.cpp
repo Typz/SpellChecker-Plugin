@@ -21,6 +21,7 @@
 #include "spellcheckerplugin.h"
 #include "spellcheckerconstants.h"
 #include "spellcheckercore.h"
+#include "spellcheckquickfixassistant.h"
 #include "outputpane.h"
 #include "NavigationWidget.h"
 
@@ -162,7 +163,12 @@ bool SpellCheckerPlugin::initialize(const QStringList &arguments, QString *error
     addAutoReleasedObject(cppParser);
     addAutoReleasedObject(cppParser->optionsPage());
 
-    m_spellCheckerCore->addDocumentParser(cppParser);  
+    m_spellCheckerCore->addDocumentParser(cppParser);
+
+    /* Quick fix provider */
+    SpellCheckQuickFixAssistProvider* quickFixProvider = new SpellCheckQuickFixAssistProvider;
+    addAutoReleasedObject(quickFixProvider);
+
     return true;
 }
 
